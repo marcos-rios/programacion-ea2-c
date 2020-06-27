@@ -11,19 +11,33 @@
 /**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**/
 /**//**//* ACÁ DEBE DESARROLLAR LAS FUNCIONES Y PRIMITIVAS PEDIDAS    *//**//**/
 /**//**//* ADEMÁS DE CUALQUIER OTRA FUNCIÓN QUE SE REQUIERA           *//**//**/
-
+void mostrarMovimTxt(const tMovi *d, FILE *fp);
 
 
 /**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**/
 /**//* FUNCIONES Y PRIMITIVAS A DESARROLLAR                               *//**/
 /**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**/
 /**//* para la información                                                *//**/
-/**
+
 void mostrarMovim_MIO(const void *d, FILE *fp)
 {
-
+    mostrarMovimTxt(d, fp);
 }
- **/
+
+void mostrarMovimTxt(const tMovi *d, FILE *fp)
+{
+    if(d)
+        fprintf(fp,
+                "%-*s %*.02f\n",
+                (int)sizeof(d->ctaCte), d->ctaCte,
+                (int)sizeof(d->saldo), d->saldo);
+    else
+        fprintf(fp,
+                "%-*s %*s\n",
+                (int)sizeof(d->ctaCte), "Nro Cuenta Banc",
+                (int)sizeof(d->saldo), "Importe");
+}
+
 /**
 int compararMovim_MIO(const void *d1, const void *d2)
 {
@@ -51,13 +65,21 @@ void mostrarTotal_MIO(const void *d, FILE *fp)
  **/
 
 /**//* para el TDA LISTA                                                  *//**/
-/**
 int mostrarLista_MIO(const tLista *p,
-                     void (*mostrar)(const void *, FILE *), FILE *fp)
+                     void (*mostrar)(const void *, FILE *),
+                     FILE *fp)
 {
-
+    int cant = 0;
+    mostrar(NULL, fp);
+    while(*p)
+    {
+        mostrar((*p)->info, fp);
+        p = &(*p)->sig;
+        cant++;
+    }
+    return cant;
 }
- **/
+
 /**
 void ordenarLista_MIO(tLista *p, int (*comparar)(const void *, const void *))
 {
