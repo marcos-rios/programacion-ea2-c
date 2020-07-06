@@ -2,22 +2,22 @@
 
 
 /**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**/
-/**//**//* CUALQUIER INCLUDE DE BIBLIOTECA QUE NECESITE, HÁGALO ACÁ   *//**//**/
+/**//**//* CUALQUIER INCLUDE DE BIBLIOTECA QUE NECESITE, Hï¿½GALO ACï¿½   *//**//**/
 #include <string.h>
 #include <stdlib.h>
 
-/**//**//* CUALQUIER INCLUDE DE BIBLIOTECA QUE NECESITE, HÁGALO ACÁ   *//**//**/
+/**//**//* CUALQUIER INCLUDE DE BIBLIOTECA QUE NECESITE, Hï¿½GALO ACï¿½   *//**//**/
 /**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**/
 #include "funciones.h"
 /**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**/
-/**//**//* ACÁ DEBE DESARROLLAR LAS FUNCIONES Y PRIMITIVAS PEDIDAS    *//**//**/
-/**//**//* ADEMÁS DE CUALQUIER OTRA FUNCIÓN QUE SE REQUIERA           *//**//**/
+/**//**//* ACï¿½ DEBE DESARROLLAR LAS FUNCIONES Y PRIMITIVAS PEDIDAS    *//**//**/
+/**//**//* ADEMï¿½S DE CUALQUIER OTRA FUNCIï¿½N QUE SE REQUIERA           *//**//**/
 
 
 /**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**/
 /**//* FUNCIONES Y PRIMITIVAS A DESARROLLAR                               *//**/
 /**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**/
-/**//* para la información                                                *//**/
+/**//* para la informaciï¿½n                                                *//**/
 
 void mostrarMovim_MIO(const void *d, FILE *fp)
 {
@@ -40,23 +40,32 @@ int compararMovim_MIO(const void *d1, const void *d2)
 }
 
 
-//int esCtaCte002_MIO(const void *d)
-//{
-//    return 1;
-//}
-//
-//
-//int acumularMoviSaldo_MIO(void **dest, unsigned *tamDest,
-//                      const void *ori, unsigned tamOri)
-//{
-//
-//}
-//
-//
-//void mostrarTotal_MIO(const void *d, FILE *fp)
-//{
-//
-//}
+int esCtaCte002_MIO(const void *d)
+{
+    const char *p = "002";
+    d = (((const tMovi*)d)->ctaCte + 12);
+    while(*p && *p == *(const char *)d)
+    {
+        p++;
+        (const char *)d++;
+    }
+
+    return !(*p - *(const char *)d);
+}
+
+
+int acumularMoviSaldo_MIO(void **dest, unsigned *tamDest,
+                          const void *ori, unsigned tamOri)
+{
+    ((tMovi*)*dest)->saldo += ((const tMovi*)ori)->saldo;
+    return 1;
+}
+
+
+void mostrarTotal_MIO(const void *d, FILE *fp)
+{
+    fprintf(fp," Total cliente: %9.2lf\n\n",((const tMovi *)d)->saldo);
+}
 
 
 /**//* para el TDA LISTA                                                  *//**/
@@ -78,40 +87,67 @@ int mostrarLista_MIO(const tLista *p,
 // tLista *p = direccion de un puntero a nodo
 void ordenarLista_MIO(tLista *p, int (*comparar)(const void *, const void *))
 {
-    if(*p == NULL)
-        return;
+    // subLista de busqueda
+    tLista *subLista, *posMenor;
+    tNodo  *nodoMenor;
 
-    tLista *inicio = p;
-    int primero = 1;
-    while((*p)->sig)
+    while(*p && (*p)->sig)
     {
-        tNodo *q = *p;
-        tNodo *minAct = q;
-        tNodo *preMin = NULL;
-        while(q->sig)
+        subLista = &(*p)->sig;
+        posMenor = p;
+
+        while(*subLista)
         {
-            printf("Q actual: %s\n", ((tMovi *)q->info)->ctaCte);
-            if(comparar(q->sig->info, minAct->info) < 0)
+            if(comparar((*subLista)->info, (*posMenor)->info) < 0)
             {
-                preMin = q;
-                minAct = q->sig;
-                if(primero)
-                {
-                    inicio = &(q->sig);
-                    primero = 0;
-                }
+                posMenor = subLista;
             }
-            q = q->sig;
+            subLista = &(*subLista)->sig;
         }
-        puts("\n");
-        if(preMin)
+
+        if(*posMenor != *p)
         {
-            preMin->sig = minAct->sig;
-            minAct->sig = *p;
+            nodoMenor = *posMenor;
+            *posMenor = nodoMenor->sig;
+            nodoMenor->sig = *p;
+            *p = nodoMenor;
         }
+
         p = &(*p)->sig;
     }
-    *p = *inicio;
+
+    // tNodo* *menor;
+    // tLista *subLista, *posMenor;
+
+    // while(*p && (*p)->sig)
+    // {
+    //     subLista = &(*p)->sig;
+    //     tNodo *minAct = q;
+    //     tNodo *preMin = NULL;
+    //     while(*subLista)
+    //     {
+    //         printf("Q actual: %s\n", ((tMovi *)q->info)->ctaCte);
+    //         if(comparar(q->sig->info, minAct->info) < 0)
+    //         {
+    //             preMin = q;
+    //             minAct = q->sig;
+    //             if(primero)
+    //             {
+    //                 inicio = &(q->sig);
+    //                 primero = 0;
+    //             }
+    //         }
+    //         q = q->sig;
+    //     }
+    //     puts("\n");
+    //     if(preMin)
+    //     {
+    //         preMin->sig = minAct->sig;
+    //         minAct->sig = *p;
+    //     }
+    //     p = &(*p)->sig;
+    // }
+    // *p = *inicio;
 }
 
 
